@@ -31,7 +31,7 @@ module DeviceAPI
     end
     
     def self.getprop(serial)
-      result = DeviceAPI::ADB.execute( 'adb -s #{serial} shell getprop' )
+      result = DeviceAPI::ADB.execute( 'adb wait-for-device -s #{serial} shell getprop' )
       
       raise result.stderr if result.exit != 0
         
