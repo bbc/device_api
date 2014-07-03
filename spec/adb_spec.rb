@@ -94,5 +94,42 @@ _______________________________________________________
     
     
   end
+  
+  describe ".getprop" do
+    
+    it "Returns a hash of name value pair properties" do
+      out = <<________________________________________________________
+[net.hostname]: [android-f1e4efe3286b0785]
+[dhcp.wlan0.ipaddress]: [10.0.1.34]
+[ro.build.version.release]: [4.1.2]
+[ro.build.version.sdk]: [16]
+[ro.product.bluetooth]: [4.0]
+[ro.product.device]: [m7]
+[ro.product.display_resolution]: [4.7 inch 1080p resolution]
+[ro.product.manufacturer]: [HTC]
+[ro.product.model]: [HTC One]
+[ro.product.name]: [m7]
+[ro.product.processor]: [Quadcore]
+[ro.product.ram]: [2GB]
+[ro.product.version]: [1.28.161.7]
+[ro.product.wifi]: [802.11 a/b/g/n/ac]
+[ro.revision]: [3]
+[ro.serialno]: [SH34RW905290]
+[ro.sf.lcd_density]: [480]
+________________________________________________________
+
+      allow(Open3).to receive(:capture3) { [ out, '', $STATUS_ZERO] }
+    
+      props = DeviceAPI::ADB.getprop('SH34RW905290')
+
+      expect( props ).to be_a Hash
+      expect( props['ro.product.model']).to eq('HTC One')
+    end
+    
+    
+  
+  
+  end
+  
 end
 

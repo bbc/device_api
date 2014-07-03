@@ -17,11 +17,21 @@ module DeviceAPI
         }[@state]
     end
     
+    
     def model
-      if !@model
-        @model = ADB.model(serial)
+      get_prop('ro.product.model')
+    end
+    
+    
+ 
+ 
+    private
+    
+    def get_prop( key )
+      if !@props || !@props[key]
+        @props = ADB.getprop( serial )
       end
-      @model
+      @props[key]
     end
 
   end

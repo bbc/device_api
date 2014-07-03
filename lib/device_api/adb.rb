@@ -30,6 +30,22 @@ module DeviceAPI
       results
     end
     
+    def self.getprop(serial)
+      result = DeviceAPI::ADB.execute( 'adb -s #{serial} shell getprop' )
+      
+      raise result.stderr if result.exit != 0
+        
+      lines = result.stdout.split("\n")
+      
+      props = {}
+      lines.each do |l|
+        if /\[(.*)\]:\s+\[(.*)\]/.match(l)
+          props[$1] = $2
+        end
+      end
+      props
+    end
+    
 
     # Execute out to shell
     # Returns a struct collecting the execution results
