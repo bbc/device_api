@@ -1,6 +1,5 @@
 require 'open3'
 require 'ostruct'
-require 'pry'
 
 module DeviceAPI
 
@@ -31,7 +30,7 @@ module DeviceAPI
     end
     
     def self.getprop(serial)
-      result = DeviceAPI::ADB.execute( 'adb wait-for-device -s #{serial} shell getprop' )
+      result = DeviceAPI::ADB.execute( "adb wait-for-device -s #{serial} shell getprop" )
       
       raise result.stderr if result.exit != 0
         
@@ -53,7 +52,6 @@ module DeviceAPI
     # struct.stdout #=> "std out"
     # struct.stderr #=> ''
     # strict.exit #=> 0
-    
     def self.execute( command )
 
       result = OpenStruct.new
@@ -63,7 +61,7 @@ module DeviceAPI
       result.exit = status.exitstatus
       result.stdout = stdout
       result.stderr = stderr
-        
+
       result
     end
   end
