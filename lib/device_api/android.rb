@@ -9,7 +9,7 @@ module DeviceAPI
     # Returns array of connected android devices
     def self.devices
       ADB.devices.collect do |d|
-        if d.keys.first && !d.keys.first.include? '?'
+        if d.keys.first && !d.keys.first.include?('?')
           DeviceAPI::Device::Android.new( :serial => d.keys.first, :state => d.values.first )
         end
       end

@@ -9,6 +9,11 @@ describe DeviceAPI::Android do
     
     
     it "Returns an empty array when no devices are connected" do
+            out = <<_______________________________________________________
+List of devices attached
+
+_______________________________________________________
+      allow(Open3).to receive(:capture3) { [out, '', $STATUS_ZERO] }
       expect(DeviceAPI::Android.devices).to eq( [] )
     end
     
