@@ -3,6 +3,8 @@ $LOAD_PATH.unshift( './lib/' )
 require 'device_api/android'
 include RSpec
 
+
+
 describe DeviceAPI::Android do
   describe ".devices" do
     

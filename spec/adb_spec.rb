@@ -91,8 +91,22 @@ _______________________________________________________
       expect( DeviceAPI::ADB.devices ).to eq( [{ 'SH34RW905290' => 'device' }] )
     end
 
-    
-    
+
+    it 'can deal with no devices connected' do
+      allow(Open3).to receive(:capture3) { [ "error: device not found\n", '', $STATUS_ZERO] }
+      expect( DeviceAPI::ADB.devices ).to be_empty
+    end
+
+
+
+
+
+
+
+
+
+
+
   end
   
   describe ".getprop" do

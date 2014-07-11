@@ -1,5 +1,6 @@
 require 'open3'
 require 'ostruct'
+require 'pry'
 
 module DeviceAPI
 
@@ -28,9 +29,10 @@ module DeviceAPI
       
       results
     end
-    
+
+
     def self.getprop(serial)
-      result = DeviceAPI::ADB.execute( "adb -s #{serial} wait-for-device shell getprop" )
+      result = DeviceAPI::ADB.execute( "adb -s #{serial} shell getprop" )
       
       raise result.stderr if result.exit != 0
         
@@ -44,6 +46,26 @@ module DeviceAPI
       end
       props
     end
+
+    def self.getdumpsys(serial)
+      result = DeviceAPI::ADB.execute( "adb -s #{serial} shell dumpsys input" )
+
+      raise result.stderr if result.exit != 0
+
+      lines = result.stdout.split("\n").collect{|line| line.strip}
+
+      props = {}
+      lines.each do |l|
+        if /(.*):\s+(.*)/.match(l)
+          props[$1] = $2
+        end
+      end
+      props
+
+
+
+    end
+
     
 
     # Execute out to shell
