@@ -1,6 +1,6 @@
 require 'open3'
 require 'ostruct'
-require 'pry'
+
 
 module DeviceAPI
 

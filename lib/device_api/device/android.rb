@@ -1,6 +1,6 @@
 require 'device_api/device'
 require 'device_api/adb'
-require 'pry'
+
 
 module DeviceAPI
   class Device::Android < Device
@@ -24,7 +24,7 @@ module DeviceAPI
     end
 
     def orientation
-      res=get_dumpsys('SurfaceOrientation')
+      res = get_dumpsys('SurfaceOrientation')
 
       case res
         when "0"
@@ -32,7 +32,7 @@ module DeviceAPI
         when "1"
           :landscape
         when nil
-          raise StandardError.new "No output returned is there a deivce connected?"
+          raise StandardError.new "No output returned is there a device connected?"
         else
           raise StandardError.new "Device orientation not returned got: #{res}."
       end
@@ -52,9 +52,7 @@ module DeviceAPI
     end
 
     def get_dumpsys(key)
-      if !@props || !@props[key]
-        @props =ADB.getdumpsys(serial)
-      end
+      @props = ADB.getdumpsys(serial)
       @props[key]
     end
 

@@ -19,7 +19,7 @@ describe DeviceAPI::Device::Android do
 
   end
 
-  describe ".orinetation" do
+  describe ".orientation" do
     it "Returns portrait when device is portrait" do
       device = DeviceAPI::Device::Android.new(:serial => 'SH34RW905290')
       allow(Open3).to receive(:capture3) { [ "SurfaceOrientation: 0\r\n", '', $STATUS_ZERO] }
@@ -51,7 +51,22 @@ describe DeviceAPI::Device::Android do
       allow(Open3).to receive(:capture3) { [ "error: device not found\n", '', $STATUS_ZERO] }
 
       expect{device.orientation}.
-          to raise_error(StandardError, 'No output returned is there a deivce connected?')
+          to raise_error(StandardError, 'No output returned is there a device connected?')
+    end
+
+    it 'Can handle device orientation changes during a test' do
+      device = DeviceAPI::Device::Android.new(:serial => 'SH34RW905290')
+      landscape="SurfaceOrientation: 1\r\n"
+      portrait="SurfaceOrientation: 0\r\n"
+
+      allow(Open3).to receive(:capture3) { [ portrait, '', $STATUS_ZERO] }
+      expect(device.orientation).
+          to eq(:portrait)
+      allow(Open3).to receive(:capture3) { [ landscape, '', $STATUS_ZERO] }
+      expect(device.orientation).
+          to eq(:landscape)
+
+
     end
 
     it 'Can filter on large amounts of adb output to find the correct value',:type=>'adb' do
