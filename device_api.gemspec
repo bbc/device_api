@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'device_api'
-  s.version     = '0.1.0'
+  s.version     = '0.1.1.orientation1'
   s.date        = '2014-07-05'
   s.summary     = 'Physical Device Management API'
   s.description = 'A common interface for physical devices'
