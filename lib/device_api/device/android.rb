@@ -1,6 +1,7 @@
 require 'device_api/device'
 require 'device_api/adb'
 
+
 module DeviceAPI
   class Device::Android < Device
     
@@ -21,6 +22,22 @@ module DeviceAPI
     def model
       get_prop('ro.product.model')
     end
+
+    def orientation
+      res = get_dumpsys('SurfaceOrientation')
+
+      case res
+        when "0"
+          :portrait
+        when "1"
+          :landscape
+        when nil
+          raise StandardError.new "No output returned is there a device connected?"
+        else
+          raise StandardError.new "Device orientation not returned got: #{res}."
+      end
+
+    end
     
     
  
@@ -31,6 +48,11 @@ module DeviceAPI
       if !@props || !@props[key]
         @props = ADB.getprop( serial )
       end
+      @props[key]
+    end
+
+    def get_dumpsys(key)
+      @props = ADB.getdumpsys(serial)
       @props[key]
     end
 
