@@ -65,8 +65,6 @@ describe DeviceAPI::Device::Android do
       allow(Open3).to receive(:capture3) { [ landscape, '', $STATUS_ZERO] }
       expect(device.orientation).
           to eq(:landscape)
-
-
     end
 
     it 'Can filter on large amounts of adb output to find the correct value',:type=>'adb' do
@@ -93,5 +91,83 @@ _______________________________________________________
     end
 
   end
+
+  describe ".install" do
+
+    it 'Can install an apk' do
+      out=<<_______________________________________________________
+      4458 KB/s (9967857 bytes in 2.183s)
+      pkg: /data/local/tmp/bbciplayer-debug.apk
+      Success
+_______________________________________________________
+
+      device = DeviceAPI::Device::Android.new(:serial => 'SH34RW905290')
+      allow(Open3).to receive(:capture3) { [out, '', $STATUS_ZERO] }
+      expect(device.install('some_apk.spk')).
+          to eq(:success)
+    end
+
+    it 'Can display an error when the apk is not found' do
+      out="can't find 'fake.apk' to install"
+
+      device = DeviceAPI::Device::Android.new(:serial => 'SH34RW905290')
+      allow(Open3).to receive(:capture3) { [out, '', $STATUS_ZERO] }
+      expect{device.install('fake.apk')}.
+          to raise_error(StandardError, "can't find 'fake.apk' to install")
+    end
+
+    it 'Can display an error message when no apk is specified' do
+      out="No apk specified."
+
+      device = DeviceAPI::Device::Android.new(:serial => 'SH34RW905290')
+      allow(Open3).to receive(:capture3) { [out, '', $STATUS_ZERO] }
+      expect{device.install('fake.apk')}.
+          to raise_error(StandardError, "No apk specified.")
+    end
+
+    it 'Can display an error when the apk is already installed' do
+      out="Failure [INSTALL_FAILED_ALREADY_EXISTS]"
+
+      device = DeviceAPI::Device::Android.new(:serial => 'SH34RW905290')
+      allow(Open3).to receive(:capture3) { [out, '', $STATUS_ZERO] }
+      expect{device.install('fake.apk')}.
+          to raise_error(StandardError, "Failure [INSTALL_FAILED_ALREADY_EXISTS]")
+    end
+
+
+    describe ".uninstall" do
+
+      it 'Can uninstall an apk' do
+        out='Success'
+
+        device = DeviceAPI::Device::Android.new(:serial => 'SH34RW905290')
+        allow(Open3).to receive(:capture3) { [out, '', $STATUS_ZERO] }
+        expect(device.uninstall('pack_name')).
+            to eq(:success)
+      end
+
+      it 'Can raise an error if the uninstall was unsuccessful' do
+        out='Failure'
+
+        device = DeviceAPI::Device::Android.new(:serial => 'SH34RW905290')
+        allow(Open3).to receive(:capture3) { [out, '', $STATUS_ZERO] }
+        expect{device.uninstall('pack_name')}.
+            to raise_error(StandardError,"Unable to install 'package_name' Error Reported: Failure")
+      end
+
+    end
+
+  #
+  #describe '.screenrecord' do
+  #  it 'Can record the screen of the device' do
+  #    pending 'not yet implemented'
+  #    this_should_not_get_executed
+  #  end
+  #
+  #  it 'Can '
+  #
+  end
+
+
 
 end
