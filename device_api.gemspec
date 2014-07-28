@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.description = 'A common interface for physical devices'
   s.authors     = ['David Buckhurst']
   s.email       = 'david.buckhurst@bbc.co.uk'
-  s.files       = Dir['README.md', 'lib/**/*.rb' ]
+  s.files       = `git ls-files`.split "\n"
   s.homepage    = 'https://github.com/bbc-test/device_api'
   s.license     = 'MIT'
   s.add_development_dependency 'rspec'
