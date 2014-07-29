@@ -1,4 +1,4 @@
-$LOAD_PATH.unshift( './lib/' )
+$LOAD_PATH.unshift('./lib/')
 
 require 'device_api/adb'
 
@@ -8,36 +8,33 @@ ProcessStatusStub = Struct.new(:exitstatus)
 $STATUS_ZERO = ProcessStatusStub.new(0)
 
 describe DeviceAPI::ADB do
-  describe ".execute" do
+  describe '.execute' do
 
     before(:all) do
       @result = DeviceAPI::ADB.execute('echo boo')
     end
 
-    it "returns an OpenStruct execution result" do
-      expect( @result ).to be_a OpenStruct
+    it 'returns an OpenStruct execution result' do
+      expect(@result).to be_a OpenStruct
     end
-    
-    it "captures exit value in hash" do
-      expect( @result.exit ).to eq(0)
+
+    it 'captures exit value in hash' do
+      expect(@result.exit).to eq(0)
     end
-    
-    it "captures stdout in hash" do
-      expect( @result.stdout ).to eq( "boo\n" )
+
+    it 'captures stdout in hash' do
+      expect(@result.stdout).to eq("boo\n")
     end
-    
-    it "capture stderr in hash" do
-      expect( @result.stderr ).to eq( "" )
+
+    it 'capture stderr in hash' do
+      expect(@result.stderr).to eq('')
     end
-    
+
   end
-  
-  describe ".devices" do
 
+  describe '.devices' do
 
-
-    
-    it "returns an empty array when there are no devices" do
+    it 'returns an empty array when there are no devices' do
       out = <<eos
 List of devices attached
 
@@ -46,11 +43,8 @@ eos
       allow(Open3).to receive(:capture3) {
         [out, '', $STATUS_ZERO]
       }
-      expect( DeviceAPI::ADB.devices ).to eq( [] )
+      expect(DeviceAPI::ADB.devices).to eq([])
     end
-
-
-
 
     it "returns an array with a single item when there's one device attached" do
       out = <<_______________________________________________________
@@ -59,13 +53,10 @@ SH34RW905290	device
 
 _______________________________________________________
       allow(Open3).to receive(:capture3) { [out, '', $STATUS_ZERO] }
-      expect( DeviceAPI::ADB.devices ).to eq( [{ 'SH34RW905290' => 'device' }] )
+      expect(DeviceAPI::ADB.devices).to eq([{ 'SH34RW905290' => 'device' }])
     end
-    
-    
-    
-    
-    it "returns an an array with multiple items when there are multiple items attached" do
+
+    it 'returns an an array with multiple items when there are multiple items attached' do
       out = <<_______________________________________________________
 List of devices attached
 SH34RW905290	device
@@ -73,45 +64,30 @@ SH34RW905290	device
 
 _______________________________________________________
       allow(Open3).to receive(:capture3) { [out, '', $STATUS_ZERO] }
-      expect( DeviceAPI::ADB.devices ).to eq( [{ 'SH34RW905290' => 'device' }, { '123456324' => 'no device' }] )
+      expect(DeviceAPI::ADB.devices).to eq([{ 'SH34RW905290' => 'device' }, { '123456324' => 'no device' }])
     end
-    
-    
-    
-    
-    
-    it "can deal with extra output when adb starts up" do
+
+    it 'can deal with extra output when adb starts up' do
       out = <<_______________________________________________________
 * daemon not running. starting it now on port 5037 *
 * daemon started successfully *
 List of devices attached
 SH34RW905290	device
 _______________________________________________________
-      allow(Open3).to receive(:capture3) { [ out, '', $STATUS_ZERO] }
-      expect( DeviceAPI::ADB.devices ).to eq( [{ 'SH34RW905290' => 'device' }] )
+      allow(Open3).to receive(:capture3) { [out, '', $STATUS_ZERO] }
+      expect(DeviceAPI::ADB.devices).to eq([{ 'SH34RW905290' => 'device' }])
     end
-
 
     it 'can deal with no devices connected' do
-      allow(Open3).to receive(:capture3) { [ "error: device not found\n", '', $STATUS_ZERO] }
-      expect( DeviceAPI::ADB.devices ).to be_empty
+      allow(Open3).to receive(:capture3) { ["error: device not found\n", '', $STATUS_ZERO] }
+      expect(DeviceAPI::ADB.devices).to be_empty
     end
 
-
-
-
-
-
-
-
-
-
-
   end
-  
-  describe ".getprop" do
-    
-    it "Returns a hash of name value pair properties" do
+
+  describe '.getprop' do
+
+    it 'Returns a hash of name value pair properties' do
       out = <<________________________________________________________
 [net.hostname]: [android-f1e4efe3286b0785]
 [dhcp.wlan0.ipaddress]: [10.0.1.34]
@@ -132,18 +108,14 @@ _______________________________________________________
 [ro.sf.lcd_density]: [480]
 ________________________________________________________
 
-      allow(Open3).to receive(:capture3) { [ out, '', $STATUS_ZERO] }
-    
+      allow(Open3).to receive(:capture3) { [out, '', $STATUS_ZERO] }
+
       props = DeviceAPI::ADB.getprop('SH34RW905290')
 
-      expect( props ).to be_a Hash
-      expect( props['ro.product.model']).to eq('HTC One')
+      expect(props).to be_a Hash
+      expect(props['ro.product.model']).to eq('HTC One')
     end
-    
-    
-  
-  
-  end
-  
-end
 
+  end
+
+end

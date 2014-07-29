@@ -1,17 +1,18 @@
 # Encoding: utf-8
 # TODO: create new class for aapt that will get the package name from an apk using: JitG
 # aapt dump badging packages/bbciplayer-debug.apk
-
+require 'pry'
 require 'open3'
 require 'ostruct'
+require 'device_api/execute_cmd'
 
 module DeviceAPI
   # Namespace for all methods encapsulating adb calls
-  class ADB
+  class ADB < Execute
     # Returns a hash representing connected devices
     # DeviceAPI::ADB.devices #=> { '1232132' => 'device' }
     def self.devices
-      result = DeviceAPI::ADB.execute('adb devices')
+      result = DeviceAPI::Execute.execute('adb devices')
 
       fail result.stderr if result.exit != 0
 
@@ -28,7 +29,7 @@ module DeviceAPI
     end
 
     def self.getprop(serial)
-      result = DeviceAPI::ADB.execute("adb -s #{serial} shell getprop")
+      result = DeviceAPI::Execute.execute("adb -s #{serial} shell getprop")
 
       fail result.stderr, caller if result.exit != 0
 
@@ -44,7 +45,7 @@ module DeviceAPI
     end
 
     def self.getdumpsys(serial)
-      result = DeviceAPI::ADB.execute("adb -s #{serial} shell dumpsys input")
+      result = DeviceAPI::Execute.execute("adb -s #{serial} shell dumpsys input")
 
       fail result.stderr, caller  if result.exit != 0
 
@@ -62,7 +63,7 @@ module DeviceAPI
     def self.install_apk(options = {})
       apk = options[:apk]
       serial = options[:serial]
-      result = DeviceAPI::ADB.execute("adb -s #{serial} install #{apk}")
+      result = DeviceAPI::Execute.execute("adb -s #{serial} install #{apk}")
 
       fail result.stderr, caller if result.exit != 0
 
@@ -77,7 +78,7 @@ module DeviceAPI
     def self.uninstall_apk(options = {})
       package_name = options[:package_name]
       serial = options[:serial]
-      result = DeviceAPI::ADB.execute("adb -s #{serial} uninstall #{package_name}")
+      result = DeviceAPI::Execute.execute("adb -s #{serial} uninstall #{package_name}")
       fail result.stderr if result.exit != 0
 
       lines = result.stdout.split("\n").map { |line| line.strip }
@@ -86,24 +87,6 @@ module DeviceAPI
       # end
 
       lines.last
-    end
-
-    # Execute out to shell
-    # Returns a struct collecting the execution results
-    # struct = DeviceAPI::ADB.execute( 'adb devices' )
-    # struct.stdout #=> "std out"
-    # struct.stderr #=> ''
-    # strict.exit #=> 0
-    def self.execute(command)
-      result = OpenStruct.new
-
-      stdout, stderr, status = Open3.capture3(command)
-
-      result.exit = status.exitstatus
-      result.stdout = stdout
-      result.stderr = stderr
-
-      result
     end
   end
 end
