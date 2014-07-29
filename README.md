@@ -30,6 +30,7 @@ device.first.orientation    # :landscape / :portrait
 Install/uninstall apk
 ---------------------
 device.first.install('location/apk_to_install.apk') # will install the apk on the first device
+
 device.first.uninstall('fake.package.name') # will uninstall the package from the device
 
 
