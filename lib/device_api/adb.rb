@@ -13,7 +13,7 @@ module DeviceAPI
     def self.devices
       result = DeviceAPI::ADB.execute('adb devices')
 
-      fail result.stderr if result.exit != 0
+      raise ADBCommandError(result.stderr) if result.exit != 0
 
       lines = result.stdout.split("\n")
       results = []
@@ -30,7 +30,7 @@ module DeviceAPI
     def self.getprop(serial)
       result = DeviceAPI::ADB.execute("adb -s #{serial} shell getprop")
 
-      fail result.stderr, caller if result.exit != 0
+      raise ADBCommandError(result.stderr) if result.exit != 0
 
       lines = result.stdout.split("\n")
 
@@ -46,7 +46,7 @@ module DeviceAPI
     def self.getdumpsys(serial)
       result = DeviceAPI::ADB.execute("adb -s #{serial} shell dumpsys input")
 
-      fail result.stderr, caller  if result.exit != 0
+      raise ADBCommandError(result.stderr) if result.exit != 0
 
       lines = result.stdout.split("\n").map { |line| line.strip }
 
@@ -64,7 +64,7 @@ module DeviceAPI
       serial = options[:serial]
       result = DeviceAPI::ADB.execute("adb -s #{serial} install #{apk}")
 
-      fail result.stderr, caller if result.exit != 0
+      raise ADBCommandError(result.stderr) if result.exit != 0
 
       lines = result.stdout.split("\n").map { |line| line.strip }
       # lines.each do |line|
@@ -78,15 +78,31 @@ module DeviceAPI
       package_name = options[:package_name]
       serial = options[:serial]
       result = DeviceAPI::ADB.execute("adb -s #{serial} uninstall #{package_name}")
-      fail result.stderr if result.exit != 0
+      raise ADBCommandError(result.stderr) if result.exit != 0
 
       lines = result.stdout.split("\n").map { |line| line.strip }
-      # lines.each do |line|
-      #  res=:success if line=='Success'
-      # end
 
       lines.last
     end
+
+    def self.get_uptime(serial)
+      result = DeviceAPI::ADB.execute("adb -s #{serial} shell cat /proc/uptime")
+
+      raise ADBCommandError(result.stderr) if result.exit != 0
+
+      lines = result.stdout.split("\n")
+
+      uptime = 0
+      lines.each do |l|
+        if /^([\d.]*)\s+[\d.]*$/.match(l)
+          uptime = Regexp.last_match[1].to_f.round
+        else
+          raise ADBCommandError("Invalid uptime for device #{serial}!")
+        end
+      end
+      uptime
+    end
+      
 
     # Execute out to shell
     # Returns a struct collecting the execution results
@@ -104,6 +120,12 @@ module DeviceAPI
       result.stderr = stderr
 
       result
+    end
+
+    class ADBCommandError < StandardError
+      def initialize(msg)
+        super(msg)
+      end
     end
   end
 end
