@@ -35,6 +35,17 @@ describe DeviceAPI::ADB do
   describe ".devices" do
 
 
+    it "returns an empty array when there are no devices" do
+      out = <<eos
+List of devices attached
+
+
+eos
+      allow(Open3).to receive(:capture3) {
+        [out, '', $STATUS_ZERO]
+      }
+      expect( DeviceAPI::ADB.devices ).to eq( [] )
+    end
 
     
     it "returns an empty array when there are no devices" do
@@ -50,8 +61,6 @@ eos
     end
 
 
-
-
     it "returns an array with a single item when there's one device attached" do
       out = <<_______________________________________________________
 List of devices attached
@@ -61,9 +70,6 @@ _______________________________________________________
       allow(Open3).to receive(:capture3) { [out, '', $STATUS_ZERO] }
       expect( DeviceAPI::ADB.devices ).to eq( [{ 'SH34RW905290' => 'device' }] )
     end
-    
-    
-    
     
     it "returns an an array with multiple items when there are multiple items attached" do
       out = <<_______________________________________________________
@@ -76,10 +82,6 @@ _______________________________________________________
       expect( DeviceAPI::ADB.devices ).to eq( [{ 'SH34RW905290' => 'device' }, { '123456324' => 'no device' }] )
     end
     
-    
-    
-    
-    
     it "can deal with extra output when adb starts up" do
       out = <<_______________________________________________________
 * daemon not running. starting it now on port 5037 *
@@ -91,21 +93,18 @@ _______________________________________________________
       expect( DeviceAPI::ADB.devices ).to eq( [{ 'SH34RW905290' => 'device' }] )
     end
 
-
     it 'can deal with no devices connected' do
       allow(Open3).to receive(:capture3) { [ "error: device not found\n", '', $STATUS_ZERO] }
       expect( DeviceAPI::ADB.devices ).to be_empty
     end
 
-
-
-
-
-
-
-
-
-
+    it "can process an uptime" do
+      out = <<_______________________________________________________
+12307.23 48052.0
+_______________________________________________________
+      allow(Open3).to receive(:capture3) { [ out, '', $STATUS_ZERO] }
+      expect( DeviceAPI::ADB.get_uptime('SH34RW905290')).to eq( 12307 )
+    end
 
   end
   

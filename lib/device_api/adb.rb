@@ -88,6 +88,25 @@ module DeviceAPI
       lines.last
     end
 
+    def self.get_uptime(serial)
+      result = DeviceAPI::ADB.execute("adb -s #{serial} shell cat /proc/uptime")
+
+      fail result.stderr, caller if result.exit != 0
+
+      lines = result.stdout.split("\n")
+
+      uptime =  0
+      lines.each do |l|
+        if /([\d|.]*)\s/.match(l)
+          uptime = Regexp.last_match[1].to_f.round
+        else
+          raise "Invalid uptime for device #{serial}!"
+        end
+      end
+      uptime
+    end
+      
+
     # Execute out to shell
     # Returns a struct collecting the execution results
     # struct = DeviceAPI::ADB.execute( 'adb devices' )
