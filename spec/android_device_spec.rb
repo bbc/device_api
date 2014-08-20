@@ -3,15 +3,13 @@ $LOAD_PATH.unshift( './lib/' )
 require 'device_api/android'
 include RSpec
 
-
-
 describe DeviceAPI::Android do
   describe ".devices" do
     
     
     
     it "Returns an empty array when no devices are connected" do
-            out = <<_______________________________________________________
+      out = <<_______________________________________________________
 List of devices attached
 
 _______________________________________________________
@@ -21,7 +19,7 @@ _______________________________________________________
     
     
     it "returns an array with a single item when there's one device attached" do
-            out = <<_______________________________________________________
+      out = <<_______________________________________________________
 List of devices attached
 SH34RW905290	device
 
@@ -36,4 +34,22 @@ _______________________________________________________
       expect( devices[0].status ).to eq(:ok)
     end
   end
+  
+  describe ".device" do
+    
+    it "Returns an object representing a device" do
+      out = <<_______________________________________________________
+device
+_______________________________________________________
+      allow(Open3).to receive(:capture3) { [out, '', $STATUS_ZERO] }
+      
+      device = DeviceAPI::Android.device( 'SH34RW905290' )
+      expect( device ).to be_a DeviceAPI::Device::Android
+      expect( device.serial ).to eq('SH34RW905290')
+      expect( device.status ).to eq(:ok)
+    end
+    
+  end
+  
 end
+

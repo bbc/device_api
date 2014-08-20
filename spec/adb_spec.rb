@@ -138,10 +138,20 @@ ________________________________________________________
       expect( props ).to be_a Hash
       expect( props['ro.product.model']).to eq('HTC One')
     end
-    
-    
+  end
   
-  
+  describe ".get_status" do
+    
+    it "Returns a state for a single device" do
+      out = <<_______________________________________________________
+device
+_______________________________________________________
+      allow(Open3).to receive(:capture3) { [out, '', $STATUS_ZERO] }
+    
+      state = DeviceAPI::ADB.get_state('SH34RW905290')
+    
+      expect(state).to eq 'device'
+    end
   end
   
 end

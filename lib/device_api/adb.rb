@@ -26,6 +26,18 @@ module DeviceAPI
       end
       results
     end
+    
+    # Retrieve device state for a single device
+    def self.get_state(serial)
+      result = DeviceAPI::ADB.execute('adb get-state -s #{serial}')
+
+      raise ADBCommandError.new(result.stderr) if result.exit != 0
+
+      lines = result.stdout.split("\n")
+      /(.*)/.match(lines.last)
+      Regexp.last_match[0].strip
+    end
+    
 
     def self.getprop(serial)
       result = DeviceAPI::ADB.execute("adb -s #{serial} shell getprop")

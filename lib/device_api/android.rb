@@ -13,5 +13,19 @@ module DeviceAPI
         end
       end
     end
+ 
+    # Retrieve an Device object by serial id
+    def self.device(serial)
+      if serial.to_s.empty?
+        raise DeviceAPI::BadSerialString.new( "serial was '#{serial.nil? ? 'nil' : serial}'" )
+      end
+      state = ADB.get_state(serial)
+      DeviceAPI::Device::Android.new(serial: serial, state: state)
+    end
+      
   end
+  
+  class BadSerialString < StandardError
+  end
+  
 end
