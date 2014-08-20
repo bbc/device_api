@@ -116,6 +116,21 @@ module DeviceAPI
       result = DeviceAPI::ADB.execute("adb -s #{serial} reboot")
       raise ADBCommandError.new(result.stderr) if result.exit != 0
     end
+    
+        # Retrieve device state for a single device
+    def self.monkey(serial, args)
+      
+      events = args[:events] || 10000
+      package = args[:package] or raise "package name not provided (:package => 'bbc.iplayer')"
+      seed = args[:seed]
+      throttle = args[:throttle]
+      
+      cmd = "adb -s #{serial} shell monkey -p #{package} -v #{events}"
+      cmd = cmd + " -s #{seed}" if seed
+      cmd = cmd + " -t #{throttle}" if throttle
+      
+      result = DeviceAPI::ADB.execute( cmd )
+    end
 
     # Execute out to shell
     # Returns a struct collecting the execution results

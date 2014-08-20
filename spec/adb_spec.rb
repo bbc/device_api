@@ -141,5 +141,23 @@ _______________________________________________________
       expect(state).to eq 'device'
     end
   end
+  
+  describe ".monkey" do
+    
+    it "Constructs and executes monkey command line" do
+      out = <<_______________________________________________________
+** Monkey aborted due to error.
+Events injected: 3082
+:Sending rotation degree=0, persist=false
+:Dropped: keys=88 pointers=180 trackballs=0 flips=0 rotations=0
+## Network stats: elapsed time=14799ms (0ms mobile, 0ms wifi, 14799ms not connected)
+** System appears to have crashed at event 3082 of 5000000 using seed 1409644708681
+  end
+_______________________________________________________
+      allow(Open3).to receive(:capture3) { [out, '', $STATUS_ZERO] }
+ 
+      expect( DeviceAPI::ADB.monkey( '1234323', :events => 5000, :package => 'my.app.package' )).to be_a OpenStruct
+    end
+  end
 
 end
