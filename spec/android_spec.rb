@@ -15,8 +15,6 @@ describe DeviceAPI::Device::Android do
       expect(device.model).to eq('HTC One')
     end
 
-
-
   end
 
   describe ".orientation" do
