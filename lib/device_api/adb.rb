@@ -1,17 +1,17 @@
 # Encoding: utf-8
 # TODO: create new class for aapt that will get the package name from an apk using: JitG
 # aapt dump badging packages/bbciplayer-debug.apk
-
 require 'open3'
 require 'ostruct'
+require 'device_api/execute_cmd'
 
 module DeviceAPI
   # Namespace for all methods encapsulating adb calls
-  class ADB
+  class ADB < Execute
     # Returns a hash representing connected devices
     # DeviceAPI::ADB.devices #=> { '1232132' => 'device' }
     def self.devices
-      result = DeviceAPI::ADB.execute('adb devices')
+      result = DeviceAPI::Execute.execute('adb devices')
 
       raise ADBCommandError.new(result.stderr) if result.exit != 0
 
@@ -40,7 +40,7 @@ module DeviceAPI
     
 
     def self.getprop(serial)
-      result = DeviceAPI::ADB.execute("adb -s #{serial} shell getprop")
+      result = DeviceAPI::Execute.execute("adb -s #{serial} shell getprop")
 
       raise ADBCommandError.new(result.stderr) if result.exit != 0
 
@@ -56,7 +56,7 @@ module DeviceAPI
     end
 
     def self.getdumpsys(serial)
-      result = DeviceAPI::ADB.execute("adb -s #{serial} shell dumpsys input")
+      result = DeviceAPI::Execute.execute("adb -s #{serial} shell dumpsys input")
 
       raise ADBCommandError.new(result.stderr) if result.exit != 0
 
@@ -74,7 +74,7 @@ module DeviceAPI
     def self.install_apk(options = {})
       apk = options[:apk]
       serial = options[:serial]
-      result = DeviceAPI::ADB.execute("adb -s #{serial} install #{apk}")
+      result = DeviceAPI::Execute.execute("adb -s #{serial} install #{apk}")
 
       raise ADBCommandError.new(result.stderr) if result.exit != 0
 
@@ -140,5 +140,6 @@ module DeviceAPI
         super(msg)
       end
     end
+
   end
 end
