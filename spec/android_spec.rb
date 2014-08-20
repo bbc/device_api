@@ -157,17 +157,5 @@ _______________________________________________________
 
     end
 
-  #
-  #describe '.screenrecord' do
-  #  it 'Can record the screen of the device' do
-  #    pending 'not yet implemented'
-  #    this_should_not_get_executed
-  #  end
-  #
-  #  it 'Can '
-  #
   end
-
-
-
 end
