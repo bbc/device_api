@@ -72,6 +72,10 @@ module DeviceAPI
       fail StandardError, 'Version number not found', caller if result.nil?
       result
     end
+    
+    def monkey(args)
+      ADB.monkey(serial, args)
+    end
 
     private
 
