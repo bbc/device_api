@@ -117,7 +117,9 @@ module DeviceAPI
       raise ADBCommandError.new(result.stderr) if result.exit != 0
     end
     
-        # Retrieve device state for a single device
+    # Run monkey
+    # At a minimum you have to provide the package name of an installed app:
+    # DeviceAPI::ADB.monkey( serial, :package => 'my.lovely.app' )
     def self.monkey(serial, args)
       
       events = args[:events] || 10000
