@@ -38,6 +38,7 @@ module DeviceAPI
     end
 
     def install(apk)
+      fail StandardError, 'No apk specified.', caller if apk.empty?
       res = install_apk(apk)
 
       case res
@@ -57,7 +58,7 @@ module DeviceAPI
         fail StandardError, "Unable to install 'package_name' Error Reported: #{res}", caller
       end
     end
-
+    
     def package_name(apk)
       @apk = apk
       result = get_app_props('package')['name']
@@ -71,8 +72,19 @@ module DeviceAPI
       fail StandardError, 'Version number not found', caller if result.nil?
       result
     end
+    
+    def monkey(args)
+      ADB.monkey(serial, args)
+    end
 
     private
+
+     def get_app_props(key)
+       unless @app_props
+         @app_props = AAPT.get_app_props(@apk)
+       end
+       @app_props.each { |x|break x[key] }
+     end
 
     def get_prop(key)
       if !@props || !@props[key]
@@ -92,13 +104,6 @@ module DeviceAPI
 
     def uninstall_apk(package_name)
       ADB.uninstall_apk(package_name: package_name, serial: serial)
-    end
-
-    def get_app_props(key)
-      unless @app_props
-        @app_props = AAPT.get_app_props(@apk)
-      end
-      @app_props.each { |x|break x[key] }
     end
   end
 end
