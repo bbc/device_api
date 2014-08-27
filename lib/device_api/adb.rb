@@ -10,8 +10,17 @@ module DeviceAPI
   class ADB < Execute
     # Returns a hash representing connected devices
     # DeviceAPI::ADB.devices #=> { '1232132' => 'device' }
+
+    # ADB.execute_with_timeout_and_retry constants
+    ADB_COMMAND_TIMEOUT = 30 # base number of seconds to wait until adb command times out
+    ADB_COMMAND_RETRIES = 5 # number of times we will retry the adb command.
+    # actual maximum seconds waited before timeout is
+    # (1 * s) + (2 * s) + (3 * s) ... up to (n * s)
+    # where s = ADB_COMMAND_TIMEOUT
+    # n = ADB_COMMAND_RETRIES
+
     def self.devices
-      result = DeviceAPI::Execute.execute('adb devices')
+      result = DeviceAPI::ADB.execute_with_timeout_and_retry('adb devices')
 
       raise ADBCommandError.new(result.stderr) if result.exit != 0
 
@@ -123,11 +132,51 @@ module DeviceAPI
       result
     end
 
+    def self.execute_with_timeout_and_retry(command)
+      retries_left = ADB_COMMAND_RETRIES
+      cmd_successful = false
+      result = 0
+
+      while (retries_left > 0) and (cmd_successful == false) do
+        begin
+          Timeout.timeout(ADB_COMMAND_TIMEOUT) do
+            result = self.execute(command)
+            cmd_successful = true
+          end
+        rescue Timeout::Error
+          retries_left = retries_left - 1
+          if retries_left > 0
+            DeviceAPI.logger.log_error "Command #{command} timed out after #{ADB_COMMAND_TIMEOUT.to_s} sec, retrying,"\
+                + " #{retries_left.to_s} attempts left.."
+          end
+        end
+      end
+
+      if retries_left < ADB_COMMAND_RETRIES # if we had to retry
+        if cmd_successful == false
+          msg = "Command #{command} timed out after #{ADB_COMMAND_RETRIES.to_s} retries. !"\
+            + " Exiting.."
+          DeviceAPI.logger.log_fatal(msg)
+          raise ADBCommandTimeoutError.new(msg)
+        else
+          DeviceAPI.logger.log_info "Command #{command} succeeded execution after retrying"
+        end
+      end
+
+      result
+    end
+  end
+
     class ADBCommandError < StandardError
       def initialize(msg)
         super(msg)
       end
     end
 
+    class ADBCommandTimeoutError < StandardError
+      def initialize(msg)
+        super(msg)
+      end
+    end
   end
 end

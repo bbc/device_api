@@ -1,5 +1,6 @@
 $LOAD_PATH.unshift('./lib/')
 
+require 'device_api'
 require 'device_api/adb'
 
 include RSpec
@@ -85,7 +86,9 @@ _______________________________________________________
       allow(Open3).to receive(:capture3) { ["error: device not found\n", '', $STATUS_ZERO] }
       expect(DeviceAPI::ADB.devices).to be_empty
     end
+  end
 
+  describe ".get_uptime" do
     it "can process an uptime" do
       out = <<_______________________________________________________
 12307.23 48052.0
@@ -93,7 +96,6 @@ _______________________________________________________
       allow(Open3).to receive(:capture3) { [ out, '', $STATUS_ZERO] }
       expect( DeviceAPI::ADB.get_uptime('SH34RW905290')).to eq( 12307 )
     end
-
   end
   
   describe ".getprop" do
@@ -128,5 +130,24 @@ ________________________________________________________
     end
 
   end
+
+    describe '.execute_with_timeout_and_retry' do
+      it 'If the command takes too long then the command should retry then fail' do
+        stub_const('DeviceAPI::ADB::ADB_COMMAND_TIMEOUT',1)
+        stub_const('DeviceAPI::ADB::ADB_COMMAND_RETRIES',5)
+        sleep_time = 5
+        cmd = "sleep #{sleep_time.to_s}"
+        expect { DeviceAPI::ADB.execute_with_timeout_and_retry(cmd) }.to raise_error(DeviceAPI::ADBCommandTimeoutError)
+      end
+
+      it 'If the command takes less time than the timeout to execute then the command should pass' do
+        stub_const('DeviceAPI::ADB::ADB_COMMAND_TIMEOUT',2)
+        stub_const('DeviceAPI::ADB::ADB_COMMAND_RETRIES',5)
+        sleep_time = 1
+        cmd = "sleep #{sleep_time.to_s}"
+        DeviceAPI::ADB.execute_with_timeout_and_retry(cmd)
+      end
+
+    end
 
 end
