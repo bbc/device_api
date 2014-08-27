@@ -1,6 +1,7 @@
 # Encoding: utf-8
 require 'device_api/device'
 require 'device_api/adb'
+require 'device_api/aapt'
 
 module DeviceAPI
   class Device::Android < Device
@@ -37,7 +38,6 @@ module DeviceAPI
     end
 
     def install(apk)
-      fail StandardError, 'No apk specified.', caller if apk.empty?
       res = install_apk(apk)
 
       case res
@@ -56,6 +56,20 @@ module DeviceAPI
       else
         fail StandardError, "Unable to install 'package_name' Error Reported: #{res}", caller
       end
+    end
+
+    def package_name(apk)
+      @apk = apk
+      result = get_app_props('package')['name']
+      fail StandardError, 'Package name not found', caller if result.nil?
+      result
+    end
+
+    def app_version_number(apk)
+      @apk = apk
+      result = get_app_props('package')['versionName']
+      fail StandardError, 'Version number not found', caller if result.nil?
+      result
     end
 
     private
@@ -78,6 +92,13 @@ module DeviceAPI
 
     def uninstall_apk(package_name)
       ADB.uninstall_apk(package_name: package_name, serial: serial)
+    end
+
+    def get_app_props(key)
+      unless @app_props
+        @app_props = AAPT.get_app_props(@apk)
+      end
+      @app_props.each { |x|break x[key] }
     end
   end
 end
