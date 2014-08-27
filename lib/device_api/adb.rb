@@ -167,16 +167,15 @@ module DeviceAPI
     end
   end
 
-    class ADBCommandError < StandardError
-      def initialize(msg)
-        super(msg)
-      end
+  class ADBCommandError < StandardError
+    def initialize(msg)
+      super(msg)
     end
+  end
 
-    class ADBCommandTimeoutError < StandardError
-      def initialize(msg)
-        super(msg)
-      end
+  class ADBCommandTimeoutError < StandardError
+    def initialize(msg)
+      super(msg)
     end
   end
 end
