@@ -35,6 +35,18 @@ module DeviceAPI
       end
       results
     end
+    
+    # Retrieve device state for a single device
+    def self.get_state(serial)
+      result = DeviceAPI::ADB.execute('adb get-state -s #{serial}')
+
+      raise ADBCommandError.new(result.stderr) if result.exit != 0
+
+      lines = result.stdout.split("\n")
+      /(.*)/.match(lines.last)
+      Regexp.last_match[0].strip
+    end
+    
 
     def self.getprop(serial)
       result = DeviceAPI::Execute.execute("adb -s #{serial} shell getprop")
@@ -112,6 +124,23 @@ module DeviceAPI
     def self.reboot(serial)
       result = DeviceAPI::ADB.execute("adb -s #{serial} reboot")
       raise ADBCommandError.new(result.stderr) if result.exit != 0
+    end
+    
+    # Run monkey
+    # At a minimum you have to provide the package name of an installed app:
+    # DeviceAPI::ADB.monkey( serial, :package => 'my.lovely.app' )
+    def self.monkey(serial, args)
+      
+      events = args[:events] || 10000
+      package = args[:package] or raise "package name not provided (:package => 'bbc.iplayer')"
+      seed = args[:seed]
+      throttle = args[:throttle]
+      
+      cmd = "adb -s #{serial} shell monkey -p #{package} -v #{events}"
+      cmd = cmd + " -s #{seed}" if seed
+      cmd = cmd + " -t #{throttle}" if throttle
+      
+      result = DeviceAPI::ADB.execute( cmd )
     end
 
     # Execute out to shell
