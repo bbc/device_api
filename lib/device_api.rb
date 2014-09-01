@@ -1,15 +1,15 @@
-require 'device_api/sys_logger'
+require 'device_api/sys_log'
 
 module DeviceAPI
-  attr_accessor :logger
+  attr_accessor :log
 
-  @@logger = DeviceAPI::SysLogger.new
+  @@log = DeviceAPI::SysLog.new
 
-  def self.set_logger(logger)
-    @@logger = logger
+  def self.set_logger(log)
+    @@log = log
   end
 
-  def self.logger
-    @@logger
+  def self.log
+    @@log
   end
 end

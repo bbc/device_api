@@ -2,7 +2,7 @@
 require 'syslog'
 
 module DeviceAPI
-  class SysLogger
+  class SysLog
 
     attr_accessor :syslog
 
@@ -17,23 +17,23 @@ module DeviceAPI
       @syslog.close
     end
 
-    def log_fatal(message)
+    def fatal(message)
       self.log(Syslog::LOG_CRIT,message)
     end
 
-    def log_error(message)
+    def error(message)
       self.log(Syslog::LOG_ERR,message)
     end
 
-    def log_warn(message)
+    def warn(message)
       self.log(Syslog::LOG_WARNING,message)
     end
 
-    def log_info(message)
+    def info(message)
       self.log(Syslog::LOG_INFO,message)
     end
 
-    def log_debug(message)
+    def debug(message)
       self.log(Syslog::LOG_DEBUG,message)
     end
   end

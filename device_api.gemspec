@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'device_api'
   s.version     = '0.1.3'
-  s.date        = '2014-08-19'
+  s.date        = '2014-09-01'
   s.summary     = 'Physical Device Management API'
   s.description = 'A common interface for physical devices'
   s.authors     = ['David Buckhurst']
