@@ -43,7 +43,7 @@ module DeviceAPI
             cmd_successful = true
           end
         rescue Timeout::Error
-          retries_left = retries_left - 1
+          retries_left -= 1
           if retries_left > 0
             DeviceAPI.log.error "Command #{command} timed out after #{COMMAND_TIMEOUT.to_s} sec, retrying,"\
                 + " #{retries_left.to_s} attempts left.."
