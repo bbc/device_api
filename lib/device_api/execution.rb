@@ -1,6 +1,7 @@
 # Encoding: utf-8
 require 'open3'
 require 'ostruct'
+require 'timeout'
 module DeviceAPI
   # Provides method to execute terminal commands in a reusable way
   class Execution
@@ -38,11 +39,11 @@ module DeviceAPI
 
       while (retries_left > 0) and (cmd_successful == false) do
         begin
-          Timeout.timeout(COMMAND_TIMEOUT) do
+          ::Timeout.timeout(COMMAND_TIMEOUT) do
             result = execute(command)
             cmd_successful = true
           end
-        rescue Timeout::Error
+        rescue ::Timeout::Error
           retries_left -= 1
           if retries_left > 0
             DeviceAPI.log.error "Command #{command} timed out after #{COMMAND_TIMEOUT.to_s} sec, retrying,"\
