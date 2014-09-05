@@ -2,6 +2,8 @@
 require 'open3'
 require 'ostruct'
 require 'timeout'
+require 'device_api'
+
 module DeviceAPI
   # Provides method to execute terminal commands in a reusable way
   class Execution

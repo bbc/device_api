@@ -1,4 +1,3 @@
-
 require 'syslog'
 
 module DeviceAPI
