@@ -35,7 +35,7 @@ describe DeviceAPI::Execution do
   describe '.execute_with_timeout_and_retry' do
     it 'should raise an exception if the command takes too long to execute' do
       stub_const('DeviceAPI::Execution::COMMAND_TIMEOUT',1)
-      stub_const('DeviceAPI::Execution::COMMAND_RETRIES',5)
+      stub_const('DeviceAPI::Execution::COMMAND_RETRIES',1)
       sleep_time = 5
       cmd = "sleep #{sleep_time.to_s}"
       expect { DeviceAPI::Execution.execute_with_timeout_and_retry(cmd) }.to raise_error(DeviceAPI::CommandTimeoutError)
