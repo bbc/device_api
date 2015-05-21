@@ -16,13 +16,13 @@ module DeviceAPI
     # where s = COMMAND_TIMEOUT
     # n = COMMAND_RETRIES
 
+    # Execute out to shell
+    # Returns a struct collecting the execution results
+    # struct = DeviceAPI::ADB.execute( 'adb devices' )
+    # struct.stdout #=> "std out"
+    # struct.stderr #=> ''
+    # strict.exit #=> 0
     def self.execute(command)
-      # Execute out to shell
-      # Returns a struct collecting the execution results
-      # struct = DeviceAPI::ADB.execute( 'adb devices' )
-      # struct.stdout #=> "std out"
-      # struct.stderr #=> ''
-      # strict.exit #=> 0
       result = OpenStruct.new
 
       stdout, stderr, status = Open3.capture3(command)
@@ -34,6 +34,7 @@ module DeviceAPI
       result
     end
 
+    # Execute a command with retries if the command fails to return
     def self.execute_with_timeout_and_retry(command)
       retries_left = COMMAND_RETRIES
       cmd_successful = false
