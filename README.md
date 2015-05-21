@@ -24,7 +24,7 @@ Tests are written in rspec, you can run them with:
 
 *DeviceAPI* gems should take a consistent approach to their api where possible.
 
-A new device api gem should, as a minimum, include a detection method on the
+A new *DeviceApi* gem should, as a minimum, include a detection method on the
 class. For example, a DeviceAPI implementation for TVs:
 
     DeviceAPI::TV.devices
