@@ -17,6 +17,7 @@ common execution and logging methods, and the base Device class.
 ## Testing
 
 Tests are written in rspec, you can run them with:
+
     bundle install
     bundle exec rspec
 
@@ -46,8 +47,6 @@ information:
 And also expose functionality through the same object:
 
     device.reboot()
-
-## License
 
 ## License
 
