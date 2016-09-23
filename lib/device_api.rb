@@ -5,6 +5,7 @@ module DeviceAPI
 
   class UnauthorizedDevice < StandardError; end
   class DeviceNotFound < StandardError; end
+  class DeviceOffline < StandardError; end
 
   @@log = DeviceAPI::SysLog.new
 
